@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Tears the stand down from any state: asks the cloud what exists with the prefix,
+# deletes only what is there, in reverse dependency order.
+set -euo pipefail
+
+PREFIX=evdokimov-11
+
+by_prefix() {  # by_prefix <yc list command...>: names of resources starting with the prefix
+  "$@" --format json | jq -r --arg p "$PREFIX" '.[] | select((.name // "") | startswith($p)) | .name'
+}
+
+for name in $(by_prefix yc load-balancer network-load-balancer list); do
+  echo "==> балансировщик $name"; yc load-balancer network-load-balancer delete --name "$name"
+done
+for name in $(by_prefix yc load-balancer target-group list); do
+  echo "==> целевая группа $name"; yc load-balancer target-group delete --name "$name"
+done
+for name in $(by_prefix yc compute instance list); do
+  echo "==> машина $name"; yc compute instance delete --name "$name"
+done
+for name in $(by_prefix yc compute disk list); do
+  echo "==> диск $name"; yc compute disk delete --name "$name"
+done
+for name in $(by_prefix yc vpc subnet list); do
+  echo "==> подсеть $name"; yc vpc subnet delete --name "$name"
+done
+for name in $(by_prefix yc vpc network list); do
+  echo "==> сеть $name"; yc vpc network delete --name "$name"
+done
+echo "==> готово: ресурсов с префиксом $PREFIX не осталось"

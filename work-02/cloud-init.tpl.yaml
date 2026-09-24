@@ -1,0 +1,19 @@
+#cloud-config
+users:
+  - name: student
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - ${SSH_KEY}
+package_update: true
+packages:
+  - nginx
+runcmd:
+  - sed -i 's/listen 80 default_server;/listen ${APP_PORT} default_server;/' /etc/nginx/sites-available/default
+  - sed -i 's/listen \[::\]:80 default_server;/listen [::]:${APP_PORT} default_server;/' /etc/nginx/sites-available/default
+  - bash -c 'echo "${GREETING} on $(hostname)" > /var/www/html/index.nginx-debian.html'
+  - nginx -t
+  - systemctl restart nginx
+  # доп. диск есть только у первой машины: без устройства шаг пропускается, cloud-init не падает
+  - bash -c '[ -b /dev/disk/by-id/virtio-data ] || exit 0; blkid /dev/disk/by-id/virtio-data || mkfs.ext4 -q /dev/disk/by-id/virtio-data; mkdir -p /mnt/data; grep -q virtio-data /etc/fstab || echo "/dev/disk/by-id/virtio-data  /mnt/data  ext4  defaults,nofail  0  2" >> /etc/fstab; mount -a'

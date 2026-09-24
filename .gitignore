@@ -1,3 +1,4 @@
 .shots/
 *.json
 cloud-init.yaml
+work-02/cloud-init.yaml
