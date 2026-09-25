@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Demo stand for sales: web servers in two zones behind a load balancer, a private app server behind NAT.
-# Idempotent: every resource is checked before it is created, a re-run finishes the missing parts only.
+# ДЗ 1: стенд для показов (веб-серверы в двух зонах за балансировщиком, сервер приложения за NAT).
+# Повторный запуск досоздаёт только то, чего не хватает.
 # usage: ./create.sh [--web-count N] [--port P] [--env NAME]
 set -euo pipefail
 cd "$(dirname "$0")"

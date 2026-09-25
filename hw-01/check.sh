@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Health of the stand for a human and for a CI runner: one line per check, exit code 0 = all passed, 1 = something failed.
+# Проверка стенда: по строке на проверку, код выхода 0 если всё ок, 1 если нет.
 set -uo pipefail
 
 PREFIX="${PREFIX:-evdokimov-11}"

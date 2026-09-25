@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Stand of practical work 2: two zones, VMs configured by cloud-init, data disk, network load balancer.
-# usage: bash work-02/create.sh [VM_COUNT] [DISK_SIZE]   (run from the repository root)
+# Практика 2: две зоны, машины настраиваются через cloud-init, диск с данными, балансировщик.
+# запуск: bash work-02/create.sh [VM_COUNT] [DISK_SIZE]  (из корня репозитория)
 set -euo pipefail            # стоп на первой ошибке и на пустой переменной
 
 # ---- параметры варианта ----
