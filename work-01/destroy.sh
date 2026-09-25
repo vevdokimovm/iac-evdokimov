@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Removes everything with the prefix: asks the cloud what exists instead of trusting a hardcoded list.
+# Удаляет всё с префиксом: что есть, спрашивает у облака, а не берёт из списка в скрипте.
 set -euo pipefail
 
 PREFIX=evdokimov-11

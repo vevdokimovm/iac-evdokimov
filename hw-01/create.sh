@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ДЗ 1: стенд для показов (веб-серверы в двух зонах за балансировщиком, сервер приложения за NAT).
 # Повторный запуск досоздаёт только то, чего не хватает.
-# usage: ./create.sh [--web-count N] [--port P] [--env NAME]
+# запуск: ./create.sh [--web-count N] [--port P] [--env NAME]
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -63,7 +63,7 @@ SSH_KEY=$(cat ~/.ssh/id_ed25519.pub)
 export APP_PORT GREETING SSH_KEY
 envsubst '${APP_PORT} ${GREETING} ${SSH_KEY}' < cloud-init.tpl.yaml > cloud-init.yaml
 
-create_vm() {  # create_vm <name> <zone> <subnet> <public: yes|no>
+create_vm() {  # create_vm <имя> <зона> <подсеть> <публичный ip: yes|no>
   local nat=""
   [[ "$4" == yes ]] && nat=",nat-ip-version=ipv4"
   if exists compute instance get --name "$1"; then skip "$1"; return; fi

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Tears the stand down from any state: asks the cloud what exists with the prefix,
-# deletes only what is there, in reverse dependency order.
+# Сносит стенд из любого состояния: спрашивает у облака, что есть с префиксом,
+# и удаляет только найденное, в обратном порядке зависимостей.
 set -euo pipefail
 
 PREFIX=evdokimov-11
 
-by_prefix() {  # by_prefix <yc list command...>: names of resources starting with the prefix
+by_prefix() {  # by_prefix <команда yc ... list>: имена ресурсов, начинающихся с префикса
   "$@" --format json | jq -r --arg p "$PREFIX" '.[] | select((.name // "") | startswith($p)) | .name'
 }
 

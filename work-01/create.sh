@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Stand of practical work 1, independent part: network, subnet and two VMs on an empty folder.
+# Практика 1, самостоятельная часть: сеть, подсеть и две машины в пустом каталоге.
 set -euo pipefail
 
 PREFIX=evdokimov-11

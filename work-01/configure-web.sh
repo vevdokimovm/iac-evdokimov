@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Runs on a VM over SSH: nginx on the personal port with the variant word and host name.
+# Запускается на машине по SSH: nginx на своём порту, со словом варианта и именем хоста.
 set -euo pipefail
 
 PORT=8033

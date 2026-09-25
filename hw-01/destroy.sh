@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Removes everything created by create.sh: finds own resources by the prefix, deletes what is found, in reverse order.
+# Удаляет всё, что создал create.sh: находит свои ресурсы по префиксу и удаляет их в обратном порядке.
 set -euo pipefail
 PREFIX="${PREFIX:-evdokimov-11}"
 
