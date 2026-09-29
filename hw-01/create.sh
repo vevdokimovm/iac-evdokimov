@@ -16,7 +16,7 @@ GREETING="${GREETING:-devlab}"
 WEB_COUNT="${WEB_COUNT:-2}"
 ENV_NAME="${ENV_NAME:-test}"
 BOOT_SIZE="${BOOT_SIZE:-20}"
-IMAGE_FAMILY=ubuntu-2404-lts
+IMAGE_FAMILY=debian-12
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
