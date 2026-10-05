@@ -15,6 +15,27 @@ shellcheck:
     - shellcheck --version
     - find . -name '*.sh' -print
     - find . -name '*.sh' -exec shellcheck {} +
+  # не запускать, если изменения не касаются скриптов и самого пайплайна
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - "**/*.sh"
+        - .gitlab-ci.yml
+
+# синтаксис шаблона cloud-init; релаксированный набор правил: со строгим
+# исправный файл не проходит из-за длинных строк
+yamllint:
+  stage: proverka
+  image: alpine:3.20
+  before_script:
+    - apk add --no-cache yamllint >/dev/null
+  script:
+    - yamllint -d relaxed work-02/cloud-init.tpl.yaml
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - work-02/cloud-init.tpl.yaml
+        - .gitlab-ci.yml
 
 # заготовка: утилиты, yc и профиль с ключом из переменной проекта
 .yc:
