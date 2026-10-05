@@ -4,8 +4,9 @@
 # сервисный аккаунт и роль
 yc iam service-account get --name evdokimov-11-sa >/dev/null 2>&1 || \
   yc iam service-account create --name evdokimov-11-sa
-export FOLDER_ID=$(yc config get folder-id)
-export SA_ID=$(yc iam service-account get --name evdokimov-11-sa --format json | jq -r .id)
+FOLDER_ID=$(yc config get folder-id)
+SA_ID=$(yc iam service-account get --name evdokimov-11-sa --format json | jq -r .id)
+export FOLDER_ID SA_ID
 yc resource-manager folder add-access-binding "$FOLDER_ID" --role editor --subject "serviceAccount:$SA_ID"
 mkdir -p ~/.yc-keys
 [ -s ~/.yc-keys/evdokimov-11-key.json ] || \

@@ -24,6 +24,9 @@ yc vpc subnet create --name "$PREFIX-subnet-b" --network-name "$PREFIX-net" \
 echo "==> файл настройки из шаблона"
 SSH_KEY=$(cat ~/.ssh/id_ed25519.pub)
 export APP_PORT GREETING SSH_KEY
+# envsubst принимает имена переменных буквально: раскрой их оболочка заранее,
+# подставлять было бы нечего. Одинарные кавычки здесь верны.
+# shellcheck disable=SC2016
 envsubst '${APP_PORT} ${GREETING} ${SSH_KEY}' \
   < work-02/cloud-init.tpl.yaml > work-02/cloud-init.yaml
 
@@ -54,14 +57,14 @@ yc compute instance attach-disk "$PREFIX-app-1" \
   --auto-delete=false
 
 echo "==> целевая группа"
-TARGETS=""
+TARGETS=()
 for i in $(seq 1 "$VM_COUNT"); do
   idx=$(( (i - 1) % 2 ))
   IP=$(yc compute instance get "$PREFIX-app-$i" --format json \
     | jq -r '.network_interfaces[0].primary_v4_address.address')
-  TARGETS="$TARGETS --target subnet-name=${SUBNETS[$idx]},address=$IP"
+  TARGETS+=(--target "subnet-name=${SUBNETS[$idx]},address=$IP")
 done
-yc load-balancer target-group create --name "$PREFIX-tg" $TARGETS
+yc load-balancer target-group create --name "$PREFIX-tg" "${TARGETS[@]}"
 
 echo "==> балансировщик"
 TG_ID=$(yc load-balancer target-group get --name "$PREFIX-tg" --format json | jq -r .id)

@@ -61,6 +61,9 @@ else yc vpc subnet update --name "$PREFIX-subnet-a" --route-table-name "$PREFIX-
 echo "==> файл настройки из шаблона"
 SSH_KEY=$(cat ~/.ssh/id_ed25519.pub)
 export APP_PORT GREETING SSH_KEY
+# envsubst принимает имена переменных буквально: раскрой их оболочка заранее,
+# подставлять было бы нечего. Одинарные кавычки здесь верны.
+# shellcheck disable=SC2016
 envsubst '${APP_PORT} ${GREETING} ${SSH_KEY}' < cloud-init.tpl.yaml > cloud-init.yaml
 
 create_vm() {  # create_vm <имя> <зона> <подсеть> <публичный ip: yes|no>

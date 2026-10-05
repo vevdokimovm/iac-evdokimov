@@ -29,6 +29,9 @@ yc vpc subnet create --name "$PREFIX-subnet-b" --network-name "$PREFIX-net" \
 echo "==> файл настройки из шаблона"
 SSH_KEY=$(cat ~/.ssh/id_ed25519.pub)
 export APP_PORT GREETING SSH_KEY
+# envsubst принимает имена переменных буквально: раскрой их оболочка заранее,
+# подставлять было бы нечего. Одинарные кавычки здесь верны.
+# shellcheck disable=SC2016
 envsubst '${APP_PORT} ${GREETING} ${SSH_KEY}' \
   < work-02/cloud-init.tpl.yaml > work-02/cloud-init.yaml
 
@@ -44,6 +47,9 @@ for i in $(seq 1 "$VM_COUNT"); do
   idx=$(( (i - 1) % 2 ))
   EXTRA=()
   if [[ $i -eq 1 ]]; then
+    # yc принимает параметры диска одним аргументом через запятую; для shellcheck это
+    # похоже на ошибочный список, но запятые здесь — часть значения.
+    # shellcheck disable=SC2054
     EXTRA=(--attach-disk disk-name="$PREFIX-data",device-name=data,auto-delete=false)
   fi
   yc compute instance create \

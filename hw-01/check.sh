@@ -27,21 +27,36 @@ if ! curl -s -o /dev/null -m 4 "http://$LB_IP"; then
                "student@$APP_INT" "curl -s -m 4 $* http://$LB_IP"; }
 fi
 code=$(lb_get -o /dev/null -w '%{http_code}' || true)
-[[ "$code" == 200 ]] && ok "балансировщик отвечает: $code$VIA" || bad "балансировщик отвечает: ${code:-нет ответа}$VIA"
+if [[ "$code" == 200 ]]; then
+  ok "балансировщик отвечает: $code$VIA"
+else
+  bad "балансировщик отвечает: ${code:-нет ответа}$VIA"
+fi
 
 hosts=$(for _ in $(seq 1 12); do lb_get | grep -o "$GREETING on [a-z0-9-]*" | sed "s/$GREETING on $PREFIX-//"; done | sort -u | paste -sd, -)
 n=$(tr ',' '\n' <<< "$hosts" | grep -c . || true)
-(( n > 1 )) && ok "ответили машины: $hosts" || bad "ответили машины: ${hosts:-никто} — распределения нет"
+if (( n > 1 )); then
+  ok "ответили машины: $hosts"
+else
+  bad "ответили машины: ${hosts:-никто} — распределения нет"
+fi
 
 APP_IP=$(yc compute instance get --name "$PREFIX-app" --format json 2>/dev/null | jq -r '.network_interfaces[0].primary_v4_address.address // empty')
 reached=""
 for web in $(yc compute instance list --format json | jq -r ".[] | select(.name | startswith(\"$PREFIX-web-\")) | .name" | sort); do
   ip=$(yc compute instance get --name "$web" --format json | jq -r '.network_interfaces[0].primary_v4_address.one_to_one_nat.address // empty')
   [[ -z "$ip" || -z "$APP_IP" ]] && continue
+  # адрес и порт подставляются на своей стороне намеренно: на сервер уходит готовая команда с
+  # уже известными значениями, а переменных APP_IP и APP_PORT там нет.
+  # shellcheck disable=SC2029
   if ssh "${SSH_OPTS[@]}" "student@$ip" "curl -s -m 5 http://$APP_IP:$APP_PORT" 2>/dev/null | grep -q "$GREETING on $PREFIX-app"; then
-    reached="${web#$PREFIX-}"; break
+    reached="${web#"$PREFIX-"}"; break
   fi
 done
-[[ -n "$reached" ]] && ok "сервер приложения доступен с $reached по $APP_IP:$APP_PORT" || bad "сервер приложения недоступен с веб-серверов"
+if [[ -n "$reached" ]]; then
+  ok "сервер приложения доступен с $reached по $APP_IP:$APP_PORT"
+else
+  bad "сервер приложения недоступен с веб-серверов"
+fi
 
 exit "$fail"
