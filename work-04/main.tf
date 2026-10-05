@@ -22,6 +22,15 @@ data "yandex_compute_image" "base" {
   family = "debian-12"
 }
 
+# ---------- дополнительный диск ----------
+
+resource "yandex_compute_disk" "data" {
+  name = "evdokimov-11-tf-data"
+  zone = "ru-central1-b"
+  size = 10
+  type = "network-hdd"
+}
+
 # ---------- машина ----------
 
 resource "yandex_compute_instance" "app" {
@@ -30,10 +39,13 @@ resource "yandex_compute_instance" "app" {
   zone        = "ru-central1-b"
   platform_id = "standard-v3"
 
+  # изменение ресурсов требует остановки машины: провайдер просит подтвердить это явно
+  allow_stopping_for_update = true
+
   resources {
     cores         = 2
     core_fraction = 20
-    memory        = 2
+    memory        = 4
   }
 
   scheduling_policy {
@@ -46,6 +58,10 @@ resource "yandex_compute_instance" "app" {
       size     = 20
       type     = "network-hdd"
     }
+  }
+
+  secondary_disk {
+    disk_id = yandex_compute_disk.data.id
   }
 
   network_interface {
