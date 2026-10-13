@@ -49,8 +49,9 @@ resource "yandex_compute_instance" "web" {
   boot_disk {
     initialize_params {
       image_id = data.yandex_compute_image.os.id
-      size     = 20
-      type     = "network-hdd"
+      # 10 ГБ: квота на HDD в зоне около 30 ГБ, две машины по 20 ГБ в одной зоне не помещаются
+      size = 10
+      type = "network-hdd"
     }
   }
 
