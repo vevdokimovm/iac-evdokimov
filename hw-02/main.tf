@@ -27,7 +27,7 @@ data "yandex_compute_image" "os" {
 # ---------- веб-серверы ----------
 
 resource "yandex_compute_instance" "web" {
-  count = 2 # число серверов из варианта 11
+  count = 3 # было 2 по варианту 11, добавлена третья машина
 
   name        = "evdokimov-11-hw2-web-${count.index + 1}"
   hostname    = "evdokimov-11-hw2-web-${count.index + 1}"
