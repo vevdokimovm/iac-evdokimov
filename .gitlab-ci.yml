@@ -76,3 +76,39 @@ stend-p2:
     - export PATH=/usr/local/bin:$PATH
     - echo "Уборка стенда, префикс $PREFIX"
     - bash work-02/destroy.sh
+
+# заготовка для проверок Terraform: у образа точка входа — сам terraform,
+# а зеркала провайдеров внутри нет
+.terraform:
+  image:
+    name: hashicorp/terraform:1.15.8
+    entrypoint: [""] # иначе раннер запустит «terraform sh»
+  before_script:
+    - |
+      cat > /tmp/terraformrc <<'EOF'
+      provider_installation {
+        network_mirror {
+          url     = "https://terraform-mirror.yandexcloud.net/"
+          include = ["registry.terraform.io/*/*"]
+        }
+        direct {
+          exclude = ["registry.terraform.io/*/*"]
+        }
+      }
+      EOF
+    - export TF_CLI_CONFIG_FILE=/tmp/terraformrc
+
+# формат манифеста; -recursive обязателен, иначе вложенные каталоги не проверяются
+terraform-fmt:
+  extends: .terraform
+  stage: proverka
+  script:
+    - terraform fmt -check -diff -recursive
+
+# разбор манифеста: провайдер ставится, хранилище состояния не трогается
+terraform-validate:
+  extends: .terraform
+  stage: proverka
+  script:
+    - terraform -chdir=hw-02 init -backend=false
+    - terraform -chdir=hw-02 validate
