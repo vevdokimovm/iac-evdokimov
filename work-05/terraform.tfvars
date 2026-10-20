@@ -1,0 +1,10 @@
+prefix       = "evdokimov-11"
+zone         = "ru-central1-d" # по варианту b, но в b виртуальные машины не создаются (см. методичку)
+subnet_cidr  = "10.21.1.0/24"
+app_port     = 8033
+disk_size    = 10 # по варианту 20, но две машины по 20 ГБ не помещаются в квоту зоны
+vm_count     = 2
+image_family = "debian-12"
+greeting     = "devlab"
+env          = "test"
+open_ports   = [8033, 22]

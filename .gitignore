@@ -18,3 +18,6 @@ work-02/cloud-init.yaml
 *.tfstate.*
 # скачанные провайдеры: восстанавливаются командой init
 .terraform/
+
+# значения с секретами
+*.auto.tfvars
